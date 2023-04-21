@@ -1,0 +1,58 @@
+{% if isLoggedIn %}
+<h1>Welcome to the home page user!</h1>
+{% else %}
+<h1>Welcome to the site!</h1>
+{% endif %}
+
+{% if not isLoggedIn %}
+<form method="POST" action="{{ url_for('login') }}">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <input type="submit" value="Login">
+</form>
+{% endif %}
+
+
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        {% for product in products %}
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-4">
+                <div class="card text-black">
+                    <i class="fab fa-apple fa-lg pt-3 pb-1 px-3"></i>
+                    <a href="{{ url_for('productDisplay', productId=product._id) }}"><img src={{ product.image }} class="card-img-top" /></a>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h5 class="card-title"> {{ product.name }}</h5>
+                            <h5 class="card-title"> {{ product.price }} TL </h5>
+                            {% if product.desc is defined %}
+                            <p class="text-muted mb-4"> {{ product.desc }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between">
+                                <span>Seller:</span><span> {{ product.seller }}</span>
+                            </div>
+                            {% if product.size is defined %}
+                            <div class="d-flex justify-content-between">
+                                <span>Size:</span><span>{{ product.size }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.colour is defined %}
+                            <div class="d-flex justify-content-between">
+                                <span>Colour:</span><span>{{ product.colour }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% if  isLoggedIn %}
+<a href="/logout">Logout</a>
+{% endif %}

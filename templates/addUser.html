@@ -1,0 +1,17 @@
+<h1>Sample User</h1>
+<div>
+    <ul>
+        <li> {{user.id}} </li>
+        <li> {{user.username}} </li>
+        <li> {{user.password}} </li>
+        <li> {{user.isAdmin}} </li>
+    </ul>
+    <ul>
+        {% for item in userList %} 
+        <li> {{item.id}} </li>
+        <li> {{item.username}} </li>
+        <li> {{item.password}} </li>
+        <li> {{item.isAdmin}} </li>
+        {% endfor %}
+    </ul>
+</div>
