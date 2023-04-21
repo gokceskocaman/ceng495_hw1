@@ -5,6 +5,7 @@ import db
 app = Flask(__name__)
 app.secret_key = 'soSecret'
 
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -59,9 +60,49 @@ def get_products(productType = None):
 
 @app.route('/')
 def home():
+    category = request.args.get('category')
+    if category:
+        products = db.db.products.find({'seller':category})
+    else:
+        products = db.db.products.find()  
     isLoggedIn = current_user.is_authenticated
-    products = get_products()
     return render_template('home.html', products= products, isLoggedIn= isLoggedIn)
+
+
+
+@app.route('/addItem')
+def addItem():
+   return render_template("addItem.html",  isLoggedIn=  current_user.is_authenticated , isAdmin= current_user.isAdmin)
+
+@app.route('/submitItem', methods=['POST'])
+def submitItem():
+    type = request.form['category']
+    name = request.form['name']
+    description = request.form['description']
+    price = request.form['price']
+    seller = request.form['seller']
+    image = request.form['image']
+    size = request.form['size']
+    colour = request.form['colour']
+
+    db.db.products.insert_one({
+        'type': type,
+        'name': name, 
+        'description': description, 
+        'price': price,
+        'seller': seller,
+        'image': image,
+        'size':size,
+        'colour':colour
+        })
+    return redirect(url_for('home'))
+   
+
+ 
+
+
+
+
 
 @app.route('/logout')
 @login_required
@@ -69,6 +110,7 @@ def logout():
     logout_user()
     flash('You are logged out.')
     return redirect(url_for('home'))
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -150,4 +192,4 @@ def addProduct():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(port=8000)
+    app.run(port=5000)

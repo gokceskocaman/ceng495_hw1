@@ -1,8 +1,18 @@
 {% if isLoggedIn %}
-<h1>Welcome to the home page user!</h1>
+    <h1>Welcome to the home page user!</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/logout">Logout</a></li>
+            <li><a href="/addItem">Add Item</a></li>
+        </ul>
+    </nav>
+    
 {% else %}
-<h1>Welcome to the site!</h1>
+    <h1>Welcome to the site!</h1>
 {% endif %}
+
+
 
 {% if not isLoggedIn %}
 <form method="POST" action="{{ url_for('login') }}">
@@ -13,6 +23,20 @@
     <input type="submit" value="Login">
 </form>
 {% endif %}
+
+
+<form method="get">
+    <label for="category">Category:</label>
+    <select name="category" id="seller">
+      <option value="">All</option>
+      <option value="cloth">Clothing</option>
+      <option value="computer">Computer Components</option>
+      <option value="monitor">Monitor</option>
+      <option value="snack">Snacks</option>
+    </select>
+    <button type="submit">Filter</button>
+  </form>
+
 
 
 <section style="background-color: #eee;">
@@ -53,6 +77,3 @@
         </div>
     </div>
 </section>
-{% if  isLoggedIn %}
-<a href="/logout">Logout</a>
-{% endif %}
