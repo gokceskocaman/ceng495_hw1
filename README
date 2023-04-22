@@ -1,0 +1,57 @@
+https://gokcesultankocaman-ceng495.onrender.com/
+
+ADMIN:
+username = gokce
+password = kocaman
+
+user1:
+username = gokce
+password = sultan
+
+user2:
+username = kerim
+password = konar
+
+
+I chose Flask for my e-commerce website  because I found it to be a flexible web framework that is easy to get up and running. Since I am already proficient in Python, I found Flask's documentation to be clear and accessible, and I could find many helpful tutorials and resources online to support my learning. Moreover, the extensive community of Flask developers and libraries allowed me to seamlessly integrate other technologies, like MongoDB Atlas, and easily expand my website's features. 
+
+
+
+Mongodb Design:
+
+I have 4 collections in my db
+
+products collection fields:
+_id:
+type: ["Clothing","computer","monitor","snack"]
+name:
+description:
+price:
+seller:
+image:
+size:
+colour:
+
+
+products collection fields:
+_id:
+productId: 
+rateValue:
+userId:
+
+reviews collection fields:
+_id:
+productId: 
+reviewText:
+userId:
+userName:
+
+users collection fields:
+username:
+password:
+isAdmin:
+
+
+
+
+
