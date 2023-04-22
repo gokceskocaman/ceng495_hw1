@@ -106,8 +106,27 @@ def submitItem():
    
 
  
+@app.route('/addUser')
+def addUser():  
+    return render_template("addUser.html")
 
 
+@app.route('/submitUser', methods=['POST'])
+def submitUser():  
+    username = request.form['username']
+    password = request.form['password']
+    isAdmin = request.form['isAdmin']
+
+    if(isAdmin == 'y'):
+        isAdmin = True
+    else:
+        isAdmin = False
+    db.db.users.insert_one({
+        'username': username,
+        'password': password,
+        'isAdmin': isAdmin
+        })
+    return redirect(url_for('home'))
 
 
 
@@ -132,9 +151,10 @@ def profile():
     ratings = list(ratings)
 
     averageRating = 0
-    for rating in ratings:
-        averageRating += int(rating['rateValue'])
-    averageRating = averageRating / len(ratings)
+    if(len(ratings) > 0):
+        for rating in ratings:
+            averageRating += int(rating['rateValue'])
+        averageRating = averageRating / len(ratings)
     return render_template('profile.html', name = name, isAdmin = isAdmin, reviews = reviews, ratings = ratings, averageRating = averageRating)
 
 
@@ -226,10 +246,7 @@ def addProduct():
     db.db.products.insert_one({"name": 'Nintendo', "desc": 'It is a fully functional linux computer that can do most things a full system can (games, web stuff, videos, music etc). You can also output the video to an external monitor, transforming it into a desktop-ish computer. ', "price": 150.50, 
                               "seller": 'Kerim', "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXroRDVVa4McfpCaIgSnE_KDaL2zjP7j0yU2nd7y8JHxiJqGkQ5bDvFHg5PUuZ8gxrmCU&usqp=CAU",
                               "colour": 'black'})
-@app.route('/addUser')
-def addUser():
-    db.db.users.insert_one({"username": 'admin', "password": 'admin', "isAdmin": True})    
-    return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(port=8000)

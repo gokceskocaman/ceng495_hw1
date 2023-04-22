@@ -1,17 +1,29 @@
-<h1>Sample User</h1>
-<div>
-    <ul>
-        <li> {{user.id}} </li>
-        <li> {{user.username}} </li>
-        <li> {{user.password}} </li>
-        <li> {{user.isAdmin}} </li>
-    </ul>
-    <ul>
-        {% for item in userList %} 
-        <li> {{item.id}} </li>
-        <li> {{item.username}} </li>
-        <li> {{item.password}} </li>
-        <li> {{item.isAdmin}} </li>
-        {% endfor %}
-    </ul>
-</div>
+<div class="login-box">
+    <h2>Add User</h2>
+    <form method="post" action="/submitUser" class="addForms">
+      <div class="user-box">
+        <input type="text" id="username" name="username">
+        <label for="username">UserName:</label>
+      </div>
+      <div class="user-box">
+        <input type="text" id="password" name="password">
+        <label for="password">Password:</label>
+      </div>
+      <div class="user-box">
+        <input type="boolean" id="isAdmin" name="isAdmin">
+        <label for="isAdmin">isAdmin(y or n):</label>
+      </div>
+      
+
+     
+      
+      <a>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <button type="submit">Submit</button>
+        
+      </a>
+    </form>
+  </div>
