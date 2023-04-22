@@ -1,7 +1,14 @@
 from flask import Flask, render_template, request, url_for, redirect, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from bson.objectid import ObjectId
-import db
+from flask_pymongo import pymongo
+
+
+CONNECTION_STRING = "mongodb+srv://gokcesultan:19861990@cluster0.vgyfqay.mongodb.net/?retryWrites=true&w=majority"
+client = pymongo.MongoClient(CONNECTION_STRING)
+db = client.get_database('flask_mongodb_atlas')
+user_collection = pymongo.collection.Collection(db, 'user_collection')
+
 app = Flask(__name__)
 app.secret_key = 'soSecret'
 
@@ -48,27 +55,27 @@ class shopUser(UserMixin):
     
 @login_manager.user_loader
 def load_user(user_id):
-    user = db.db.users.find_one({'_id': ObjectId(user_id)})
+    user = db.users.find_one({'_id': ObjectId(user_id)})
     return shopUser(user['_id'], user['username'], user['password'], user['isAdmin'])
 
 def get_products(productType = None):
     if type is None:
-        products = db.db.products.find()
+        products = db.products.find()
     else:
-        products = db.db.products.find({'type': productType})
+        products = db.products.find({'type': productType})
     return products
 
 @app.route('/')
 def home():
-    products = db.db.products.find()
+    products = db.products.find()
     for product in products:
         product['_id_str'] = str(product['_id'])
 
     category = request.args.get('category')
     if category:
-        products = db.db.products.find({'type':category})
+        products = db.products.find({'type':category})
     else:
-        products = db.db.products.find()  
+        products = db.products.find()  
     isLoggedIn = current_user.is_authenticated
 
     try:
@@ -79,7 +86,7 @@ def home():
 
 @app.route('/removeUser')
 def removeUser():
-    users = db.db.users.find()
+    users = db.users.find()
     return render_template("removeUser.html", users= users, isLoggedIn=  current_user.is_authenticated , isAdmin= current_user.isAdmin)
  
 
@@ -99,7 +106,7 @@ def submitItem():
     size = request.form['size']
     colour = request.form['colour']
 
-    db.db.products.insert_one({
+    db.products.insert_one({
         'type': type,
         'name': name, 
         'description': description, 
@@ -128,7 +135,7 @@ def submitUser():
         isAdmin = True
     else:
         isAdmin = False
-    db.db.users.insert_one({
+    db.users.insert_one({
         'username': username,
         'password': password,
         'isAdmin': isAdmin
@@ -152,8 +159,8 @@ def profile():
     isAdmin = False;
     if(current_user.is_authenticated):
         isAdmin = current_user.isAdmin
-    reviews = db.db.reviews.find({'userId':ObjectId(current_user.id)})
-    ratings = db.db.ratings.find({'userId':ObjectId(current_user.id)})
+    reviews = db.reviews.find({'userId':ObjectId(current_user.id)})
+    ratings = db.ratings.find({'userId':ObjectId(current_user.id)})
     ratings = list(ratings)
 
     averageRating = 0
@@ -171,7 +178,7 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-    user = db.db.users.find_one({'username': username, 'password': password})
+    user = db.users.find_one({'username': username, 'password': password})
 
     if user is None:
         flash('Invalid Login.')
@@ -193,7 +200,7 @@ def rateProduct(productId):
 
     userId = current_user.id
 
-    db.db.ratings.insert_one({'productId': ObjectId(productId), 'rateValue':rateVal, 'userId':ObjectId(userId)})
+    db.ratings.insert_one({'productId': ObjectId(productId), 'rateValue':rateVal, 'userId':ObjectId(userId)})
 
     return redirect(url_for('productDisplay', productId=productId))
     
@@ -207,25 +214,25 @@ def reviewProduct(productId):
     userId = current_user.id
     userName = current_user.username
     
-    db.db.reviews.insert_one({'productId': ObjectId(productId), 'reviewText': reviewText, 'userId':ObjectId(userId), 'userName': userName})
+    db.reviews.insert_one({'productId': ObjectId(productId), 'reviewText': reviewText, 'userId':ObjectId(userId), 'userName': userName})
     return redirect(url_for('productDisplay', productId=productId))
 
 
 
 @app.route('/delete/<productId>', methods=['POST'])
 def deleteProduct(productId):
-    db.db.products.delete_one({'_id': ObjectId(productId)})
+    db.products.delete_one({'_id': ObjectId(productId)})
     return redirect(url_for('home'))
 
 @app.route('/deleteUser/<userId>', methods=['POST'])
 def deleteUser(userId):
-    db.db.users.delete_one({'_id': ObjectId(userId)})
-    reviews_user = db.db.reviews.find({'userId': ObjectId(userId)})
-    ratings_user = db.db.ratings.find({'userId': ObjectId(userId)})
+    db.users.delete_one({'_id': ObjectId(userId)})
+    reviews_user = db.reviews.find({'userId': ObjectId(userId)})
+    ratings_user = db.ratings.find({'userId': ObjectId(userId)})
     for review in reviews_user:
-        db.db.reviews.delete_one({'_id': ObjectId(review['_id'])})
+        db.reviews.delete_one({'_id': ObjectId(review['_id'])})
     for rating in ratings_user:
-        db.db.ratings.delete_one({'_id': ObjectId(rating['_id'])})
+        db.ratings.delete_one({'_id': ObjectId(rating['_id'])})
     return redirect(url_for('removeUser'))
  
 
@@ -233,9 +240,9 @@ def deleteUser(userId):
 
 @app.route("/productDisplay/<productId>", methods=['POST', 'GET'])
 def productDisplay(productId):
-    product = db.db.products.find_one({'_id': ObjectId(productId)})
-    reviews = db.db.reviews.find({"productId": ObjectId(productId)})
-    ratings = db.db.ratings.find({"productId": ObjectId(productId)})
+    product = db.products.find_one({'_id': ObjectId(productId)})
+    reviews = db.reviews.find({"productId": ObjectId(productId)})
+    ratings = db.ratings.find({"productId": ObjectId(productId)})
 
     cnt = 0
     avgRating = 0.0
@@ -248,7 +255,7 @@ def productDisplay(productId):
 
 @app.route('/seeUser', methods=['POST'])
 def seeUser():
-    user = db.db.users.find_one({'username': 'admin', 'password': 'admin'})
+    user = db.users.find_one({'username': 'admin', 'password': 'admin'})
     
     id = user['_id']
     username = user['username']
@@ -262,7 +269,7 @@ def seeUser():
 
 @app.route('/addProduct')
 def addProduct():
-    db.db.products.insert_one({"name": 'Nintendo', "desc": 'It is a fully functional linux computer that can do most things a full system can (games, web stuff, videos, music etc). You can also output the video to an external monitor, transforming it into a desktop-ish computer. ', "price": 150.50, 
+    db.products.insert_one({"name": 'Nintendo', "desc": 'It is a fully functional linux computer that can do most things a full system can (games, web stuff, videos, music etc). You can also output the video to an external monitor, transforming it into a desktop-ish computer. ', "price": 150.50, 
                               "seller": 'Kerim', "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXroRDVVa4McfpCaIgSnE_KDaL2zjP7j0yU2nd7y8JHxiJqGkQ5bDvFHg5PUuZ8gxrmCU&usqp=CAU",
                               "colour": 'black'})
 
