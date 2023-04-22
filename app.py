@@ -128,7 +128,14 @@ def profile():
     if(current_user.is_authenticated):
         isAdmin = current_user.isAdmin
     reviews = db.db.reviews.find({'userId':ObjectId(current_user.id)})
-    return render_template('profile.html', name = name, isAdmin = isAdmin, reviews = reviews)
+    ratings = db.db.ratings.find({'userId':ObjectId(current_user.id)})
+    ratings = list(ratings)
+
+    averageRating = 0
+    for rating in ratings:
+        averageRating += int(rating['rateValue'])
+    averageRating = averageRating / len(ratings)
+    return render_template('profile.html', name = name, isAdmin = isAdmin, reviews = reviews, ratings = ratings, averageRating = averageRating)
 
 
 

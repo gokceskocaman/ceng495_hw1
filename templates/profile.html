@@ -8,5 +8,11 @@
     <p><strong>User Reviews:</strong> {{ review.reviewText }}</p>
     <hr>
     {% endfor %}
+
+    {% for rating in ratings %}
+    <p><strong>User Rating:</strong> {{ rating.rateValue }}</p>
+    <hr>
+    {% endfor %}
+    <p><strong>Average Rating:</strong> {{ averageRating }}</p>
    
 {% endblock %}
