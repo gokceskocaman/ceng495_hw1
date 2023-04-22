@@ -37,10 +37,10 @@
 
 
 <form method="get">
-    <label for="category">Category:</label>
+    <label for="category">Type:</label>
     <select name="category" id="type">
       <option value="">All</option>
-      <option value="Gokce">Clothing</option>
+      <option value="Clothing">Clothing</option>
       <option value="computer">Computer Components</option>
       <option value="monitor">Monitor</option>
       <option value="snack">Snacks</option>
@@ -59,7 +59,7 @@
                 <div class="card text-black">
                     <i class="fab fa-apple fa-lg pt-3 pb-1 px-3"></i>
                     <a href="{{ url_for('productDisplay', productId=product._id) }}"><img src={{ product.image }} class="card-img-top" 
-                        style="width: 300px; height: 200px;"/></a>
+                        style="width: 300px; height: 300px;"/></a>
                     <div class="card-body">
                         <div class="text-center">
                             <h5 class="card-title"> {{ product.name }}</h5>
