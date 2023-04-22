@@ -127,7 +127,7 @@ def profile():
     isAdmin = False;
     if(current_user.is_authenticated):
         isAdmin = current_user.isAdmin
-    reviews = db.db.reviews.find({'user_id':ObjectId(current_user.id)})
+    reviews = db.db.reviews.find({'userId':ObjectId(current_user.id)})
     return render_template('profile.html', name = name, isAdmin = isAdmin, reviews = reviews)
 
 
@@ -219,7 +219,9 @@ def addProduct():
     db.db.products.insert_one({"name": 'Nintendo', "desc": 'It is a fully functional linux computer that can do most things a full system can (games, web stuff, videos, music etc). You can also output the video to an external monitor, transforming it into a desktop-ish computer. ', "price": 150.50, 
                               "seller": 'Kerim', "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXroRDVVa4McfpCaIgSnE_KDaL2zjP7j0yU2nd7y8JHxiJqGkQ5bDvFHg5PUuZ8gxrmCU&usqp=CAU",
                               "colour": 'black'})
-    
+@app.route('/addUser')
+def addUser():
+    db.db.users.insert_one({"username": 'admin', "password": 'admin', "isAdmin": True})    
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
