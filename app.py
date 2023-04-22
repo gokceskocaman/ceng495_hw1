@@ -60,14 +60,21 @@ def get_products(productType = None):
 
 @app.route('/')
 def home():
+    products = db.db.products.find()
+    for product in products:
+        product['_id_str'] = str(product['_id'])
+
     category = request.args.get('category')
     if category:
-        products = db.db.products.find({'seller':category})
+        products = db.db.products.find({'type':category})
     else:
         products = db.db.products.find()  
     isLoggedIn = current_user.is_authenticated
-    return render_template('home.html', products= products, isLoggedIn= isLoggedIn)
 
+    try:
+        return render_template('home.html', products= products, isLoggedIn= isLoggedIn, isAdmin= current_user.isAdmin)
+    except:
+        return render_template('home.html', products= products, isLoggedIn= isLoggedIn, isAdmin= False)
 
 
 @app.route('/addItem')
@@ -76,7 +83,7 @@ def addItem():
 
 @app.route('/submitItem', methods=['POST'])
 def submitItem():
-    type = request.form['category']
+    type = request.form['type']
     name = request.form['name']
     description = request.form['description']
     price = request.form['price']
@@ -104,12 +111,25 @@ def submitItem():
 
 
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('You are logged out.')
     return redirect(url_for('home'))
+
+
+
+@app.route('/profile')
+def profile():
+    name = current_user.username
+    isAdmin = False;
+    if(current_user.is_authenticated):
+        isAdmin = current_user.isAdmin
+    reviews = db.db.reviews.find({'user_id':ObjectId(current_user.id)})
+    return render_template('profile.html', name = name, isAdmin = isAdmin, reviews = reviews)
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -128,6 +148,9 @@ def login():
         flash('You are logged in.')
 
     return redirect(url_for('home'))
+
+
+
 
 @app.route("/rateProduct/<productId>", methods=['POST', 'GET'])
 @login_required
@@ -153,6 +176,14 @@ def reviewProduct(productId):
     
     db.db.reviews.insert_one({'productId': ObjectId(productId), 'reviewText': reviewText, 'userId':ObjectId(userId), 'userName': userName})
     return redirect(url_for('productDisplay', productId=productId))
+
+
+
+@app.route('/delete/<productId>', methods=['POST'])
+def deleteProduct(productId):
+    db.db.products.delete_one({'_id': ObjectId(productId)})
+    return redirect(url_for('home'))
+
 
 @app.route("/productDisplay/<productId>", methods=['POST', 'GET'])
 def productDisplay(productId):
@@ -192,4 +223,4 @@ def addProduct():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=8000)

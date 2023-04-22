@@ -5,12 +5,18 @@
             <li><a href="/">Home</a></li>
             <li><a href="/logout">Logout</a></li>
             <li><a href="/addItem">Add Item</a></li>
+            <li><a href="/profile">Profile</a></li>
+          
+            
+
         </ul>
     </nav>
     
 {% else %}
     <h1>Welcome to the site!</h1>
 {% endif %}
+
+
 
 
 
@@ -27,9 +33,9 @@
 
 <form method="get">
     <label for="category">Category:</label>
-    <select name="category" id="seller">
+    <select name="category" id="type">
       <option value="">All</option>
-      <option value="cloth">Clothing</option>
+      <option value="Gokce">Clothing</option>
       <option value="computer">Computer Components</option>
       <option value="monitor">Monitor</option>
       <option value="snack">Snacks</option>
@@ -38,6 +44,7 @@
   </form>
 
 
+ 
 
 <section style="background-color: #eee;">
     <div class="container py-5">
@@ -67,8 +74,16 @@
                             {% if product.colour is defined %}
                             <div class="d-flex justify-content-between">
                                 <span>Colour:</span><span>{{ product.colour }}</span>
-                            </div>
+                            </div>                         
                             {% endif %}
+
+                            {% if isAdmin  %}
+                            <form action="{{ url_for('deleteProduct', productId=product._id)}}" method="post">
+                                <input type="hidden" name="item_id" value="{{ product._id }}">
+                                <button type="submit">Delete</button>
+                              </form>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>

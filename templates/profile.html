@@ -1,0 +1,12 @@
+
+{% block content %}
+    <h1>User Profile</h1>
+    <p><strong>Username:</strong> {{ name }}</p>
+    <p><strong>is Admin:</strong> {{ isAdmin }}</p>
+
+    {% for review in reviews %}
+    <p><strong>User Reviews:</strong> {{ review.review }}</p>
+    <hr>
+    {% endfor %}
+   
+{% endblock %}
