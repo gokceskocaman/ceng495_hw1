@@ -58,7 +58,8 @@
             <div class="col-md-8 col-lg-6 col-xl-4">
                 <div class="card text-black">
                     <i class="fab fa-apple fa-lg pt-3 pb-1 px-3"></i>
-                    <a href="{{ url_for('productDisplay', productId=product._id) }}"><img src={{ product.image }} class="card-img-top" /></a>
+                    <a href="{{ url_for('productDisplay', productId=product._id) }}"><img src={{ product.image }} class="card-img-top" 
+                        style="width: 300px; height: 200px;"/></a>
                     <div class="card-body">
                         <div class="text-center">
                             <h5 class="card-title"> {{ product.name }}</h5>
