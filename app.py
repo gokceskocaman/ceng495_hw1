@@ -108,7 +108,7 @@ def submitItem():
  
 @app.route('/addUser')
 def addUser():  
-    return render_template("addUser.html")
+    return render_template("addUser.html",isLoggedIn=  current_user.is_authenticated , isAdmin= current_user.isAdmin)
 
 
 @app.route('/submitUser', methods=['POST'])
