@@ -220,6 +220,12 @@ def deleteProduct(productId):
 @app.route('/deleteUser/<userId>', methods=['POST'])
 def deleteUser(userId):
     db.db.users.delete_one({'_id': ObjectId(userId)})
+    reviews_user = db.db.reviews.find({'userId': ObjectId(userId)})
+    ratings_user = db.db.ratings.find({'userId': ObjectId(userId)})
+    for review in reviews_user:
+        db.db.reviews.delete_one({'_id': ObjectId(review['_id'])})
+    for rating in ratings_user:
+        db.db.ratings.delete_one({'_id': ObjectId(rating['_id'])})
     return redirect(url_for('removeUser'))
  
 
