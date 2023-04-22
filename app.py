@@ -199,8 +199,11 @@ def rateProduct(productId):
         rateVal = request.form.get("rate")
 
     userId = current_user.id
-
-    db.ratings.insert_one({'productId': ObjectId(productId), 'rateValue':rateVal, 'userId':ObjectId(userId)})
+    #if user has already rated the product, update the rating
+    if(db.ratings.find_one({'productId': ObjectId(productId), 'userId':ObjectId(userId)})):
+        db.ratings.update_one({'productId': ObjectId(productId), 'userId':ObjectId(userId)}, {'$set': {'rateValue': rateVal}})
+    else:
+        db.ratings.insert_one({'productId': ObjectId(productId), 'rateValue':rateVal, 'userId':ObjectId(userId)})
 
     return redirect(url_for('productDisplay', productId=productId))
     
@@ -213,8 +216,11 @@ def reviewProduct(productId):
     
     userId = current_user.id
     userName = current_user.username
-    
-    db.reviews.insert_one({'productId': ObjectId(productId), 'reviewText': reviewText, 'userId':ObjectId(userId), 'userName': userName})
+    #if user has already reviewed the product, update the review
+    if(db.reviews.find_one({'productId': ObjectId(productId), 'userId':ObjectId(userId)})):
+        db.reviews.update_one({'productId': ObjectId(productId), 'userId':ObjectId(userId)}, {'$set': {'reviewText': reviewText}})
+    else:
+        db.reviews.insert_one({'productId': ObjectId(productId), 'reviewText': reviewText, 'userId':ObjectId(userId), 'userName': userName})
     return redirect(url_for('productDisplay', productId=productId))
 
 
