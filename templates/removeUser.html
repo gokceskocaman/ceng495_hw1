@@ -1,0 +1,28 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <div>
+    <a href="{{ url_for('home') }}">
+        <input type="submit" value="Home">
+    </a>
+</div>
+
+
+{% block content %}
+
+    {% for user in users %}
+    <h1>User Profile</h1>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>is Admin:</strong> {{ user.isAdmin }}</p>
+
+    <form action="{{ url_for('deleteUser', userId=user._id)}}" method="post">
+        <input type="hidden" name="item_id" value="{{ user._id }}">
+        <button type="submit">Delete</button>
+      </form>
+    {% endfor %}
+    
+ 
+   
+{% endblock %}

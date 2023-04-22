@@ -77,6 +77,13 @@ def home():
         return render_template('home.html', products= products, isLoggedIn= isLoggedIn, isAdmin= False)
 
 
+@app.route('/removeUser')
+def removeUser():
+    users = db.db.users.find()
+    return render_template("removeUser.html", users= users, isLoggedIn=  current_user.is_authenticated , isAdmin= current_user.isAdmin)
+ 
+
+
 @app.route('/addItem')
 def addItem():
    return render_template("addItem.html",  isLoggedIn=  current_user.is_authenticated , isAdmin= current_user.isAdmin)
@@ -127,7 +134,6 @@ def submitUser():
         'isAdmin': isAdmin
         })
     return redirect(url_for('home'))
-
 
 
 
@@ -210,6 +216,13 @@ def reviewProduct(productId):
 def deleteProduct(productId):
     db.db.products.delete_one({'_id': ObjectId(productId)})
     return redirect(url_for('home'))
+
+@app.route('/deleteUser/<userId>', methods=['POST'])
+def deleteUser(userId):
+    db.db.users.delete_one({'_id': ObjectId(userId)})
+    return redirect(url_for('removeUser'))
+ 
+
 
 
 @app.route("/productDisplay/<productId>", methods=['POST', 'GET'])
